@@ -478,41 +478,167 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// Local storage functions for remembering user's name
-        function saveUserData() {
-            const firstName = document.getElementById("fname").value;
-            if (firstName) {
-                localStorage.setItem("patientFirstName", firstName);
+// Remember Me functionality
+const STORAGE_KEY = "patientFormData";
+const STORAGE_EXPIRY_KEY = "patientFormExpiry";
+
+// Save all form data to localStorage with 24-hour expiration
+function saveFormData() {
+    const rememberMe = document.getElementById("remember-me").checked;
+    
+    if (rememberMe) {
+        const form = document.getElementById("signup");
+        const formData = new FormData(form);
+        const dataToStore = {};
+        
+        // Collect all form fields except passwords
+        for (const [key, value] of formData.entries()) {
+            if (key !== "pword" && key !== "pword2" && key !== "ssn") {
+                dataToStore[key] = value;
             }
         }
         
-        function loadUserData() {
-            const savedName = localStorage.getItem("patientFirstName");
-            if (savedName) {
-                // Set the first name in the input field
-                document.getElementById("fname").value = savedName;
-                
-                // Display welcome message
-                document.getElementById("welcome-message").textContent = `Welcome back, ${savedName}!`;
-                
-                // Add returning user message to the header
-                document.getElementById("returning-user").textContent = `Welcome back, ${savedName}!`;
+        // Add checkbox values (they might not be included in FormData if unchecked)
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][name="medical_conditions"]');
+        dataToStore.medical_conditions = [];
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                dataToStore.medical_conditions.push(checkbox.value);
             }
-        }
-        
-        function clearLocalStorage() {
-            localStorage.removeItem("patientFirstName");
-            document.getElementById("welcome-message").textContent = "";
-            document.getElementById("returning-user").textContent = "";
-        }
-        
-        // Add event listeners for saving data
-        document.addEventListener("DOMContentLoaded", function() {
-            loadUserData();
-            
-            // Save data when form changes
-            document.getElementById("fname").addEventListener("change", saveUserData);
-            
-            // Also save data when submitting
-            document.getElementById("signup").addEventListener("submit", saveUserData);
         });
+        
+        // Add pain level slider value
+        dataToStore.painLevel = document.getElementById("painLevel").value;
+        
+        // Set expiration time (24 hours from now)
+        const expiryTime = new Date();
+        expiryTime.setHours(expiryTime.getHours() + 24);
+        
+        // Save data and expiration time
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
+        localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
+        
+        console.log("Form data saved with expiration:", expiryTime);
+    } else {
+        // If remember me is unchecked, clear the stored data
+        clearStoredFormData();
+    }
+}
+
+// Load form data from localStorage if it exists and hasn't expired
+function loadFormData() {
+    // Check if data exists and hasn't expired
+    const expiryTimeStr = localStorage.getItem(STORAGE_EXPIRY_KEY);
+    
+    if (expiryTimeStr) {
+        const expiryTime = new Date(expiryTimeStr);
+        const currentTime = new Date();
+        
+        // If expired, clear the data
+        if (currentTime > expiryTime) {
+            clearStoredFormData();
+            return;
+        }
+        
+        // Load the data
+        const storedDataStr = localStorage.getItem(STORAGE_KEY);
+        if (storedDataStr) {
+            const storedData = JSON.parse(storedDataStr);
+            
+            // Fill in form fields
+            for (const key in storedData) {
+                if (key === "medical_conditions") {
+                    // Handle medical conditions checkboxes
+                    if (Array.isArray(storedData[key])) {
+                        storedData[key].forEach(condition => {
+                            const checkbox = document.querySelector(`input[name="medical_conditions"][value="${condition}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                } else if (key === "gender") {
+                    // Handle radio buttons
+                    const radio = document.querySelector(`input[name="gender"][value="${storedData[key]}"]`);
+                    if (radio) radio.checked = true;
+                } else if (key === "painLevel") {
+                    // Handle pain level slider
+                    const slider = document.getElementById("painLevel");
+                    if (slider) {
+                        slider.value = storedData[key];
+                        document.querySelector(".slider-value").textContent = storedData[key];
+                    }
+                } else {
+                    // Handle regular input fields
+                    const field = document.getElementById(key);
+                    if (field) field.value = storedData[key];
+                }
+            }
+            
+            // Check the "Remember me" box since we loaded saved data
+            document.getElementById("remember-me").checked = true;
+            
+            // Show welcome message from the enhanced saved data
+            if (storedData.fname) {
+                document.getElementById("welcome-message").textContent = `Welcome back, ${storedData.fname}!`;
+                document.getElementById("returning-user").textContent = `Welcome back, ${storedData.fname}!`;
+            }
+            
+            console.log("Form data loaded from storage");
+        }
+    }
+}
+
+// Clear all stored form data
+function clearStoredFormData() {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_EXPIRY_KEY);
+    console.log("Stored form data cleared");
+}
+
+// Override the existing clearLocalStorage function
+function clearLocalStorage() {
+    // Clear both the original storage and our enhanced storage
+    localStorage.removeItem("patientFirstName");
+    clearStoredFormData();
+    
+    // Clear welcome messages
+    document.getElementById("welcome-message").textContent = "";
+    document.getElementById("returning-user").textContent = "";
+    
+    // Uncheck the remember me box
+    document.getElementById("remember-me").checked = false;
+}
+
+// Event listeners for the remember me functionality
+document.addEventListener("DOMContentLoaded", function() {
+    // Load any saved form data when the page loads
+    loadFormData();
+    
+    // Attach event listener to the remember me checkbox
+    const rememberMeCheckbox = document.getElementById("remember-me");
+    if (rememberMeCheckbox) {
+        rememberMeCheckbox.addEventListener("change", function() {
+            if (this.checked) {
+                saveFormData();
+            } else {
+                clearStoredFormData();
+            }
+        });
+    }
+    
+    // Save form data when the form changes (if remember me is checked)
+    const formInputs = document.querySelectorAll("#signup input, #signup select, #signup textarea");
+    formInputs.forEach(input => {
+        input.addEventListener("change", function() {
+            if (document.getElementById("remember-me").checked) {
+                saveFormData();
+            }
+        });
+    });
+    
+    // Save form data before submission (if remember me is checked)
+    document.getElementById("signup").addEventListener("submit", function() {
+        if (document.getElementById("remember-me").checked) {
+            saveFormData();
+        }
+    });
+});
