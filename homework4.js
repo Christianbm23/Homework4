@@ -470,3 +470,49 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.getElementById("review").addEventListener("click", reviewInput);
 });
+
+
+
+
+
+
+
+
+// Local storage functions for remembering user's name
+        function saveUserData() {
+            const firstName = document.getElementById("fname").value;
+            if (firstName) {
+                localStorage.setItem("patientFirstName", firstName);
+            }
+        }
+        
+        function loadUserData() {
+            const savedName = localStorage.getItem("patientFirstName");
+            if (savedName) {
+                // Set the first name in the input field
+                document.getElementById("fname").value = savedName;
+                
+                // Display welcome message
+                document.getElementById("welcome-message").textContent = `Welcome back, ${savedName}!`;
+                
+                // Add returning user message to the header
+                document.getElementById("returning-user").textContent = `Welcome back, ${savedName}!`;
+            }
+        }
+        
+        function clearLocalStorage() {
+            localStorage.removeItem("patientFirstName");
+            document.getElementById("welcome-message").textContent = "";
+            document.getElementById("returning-user").textContent = "";
+        }
+        
+        // Add event listeners for saving data
+        document.addEventListener("DOMContentLoaded", function() {
+            loadUserData();
+            
+            // Save data when form changes
+            document.getElementById("fname").addEventListener("change", saveUserData);
+            
+            // Also save data when submitting
+            document.getElementById("signup").addEventListener("submit", saveUserData);
+        });
