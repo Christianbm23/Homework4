@@ -208,3 +208,61 @@ td.output:first-child {
     font-weight: bold;
     margin: 10px 0;
 }
+
+
+
+
+
+
+
+
+
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(252, 229, 255);
+    z-index: 1000;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+#welcome-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007BFF;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#returning-user {
+    color: #007BFF;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+
+.iframe-title {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+ iframe {
+    width: 100%;
+    border: none;
+    height: 350px;
+}
+
+
+.iframe-container {
+                width: 50%;
+                margin: 20px 0;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
