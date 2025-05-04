@@ -5,7 +5,44 @@
     Date Updated: 2025-05-03
     Description: Style Sheet for MIS 3371 Homework 4
  */
- body {
+ 
+/* Add these styles to your homework4.css file */
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(247, 202, 253);
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 5px 0;
+}
+
+/* Add padding to the body to prevent content from going under the fixed header */
+body {
+    padding-top: 120px; /* Adjust this value based on your header height */
+}
+
+/* Make sure hr underneath the header stays in position */
+hr {
+    margin-top: 10px;
+}
+
+/* Ensure the container starts below the fixed header */
+.container {
+    position: relative;
+}
+
+
+
+
+
+
+
+
+
+body {
     font-family: Arial, sans-serif;
     background-color: rgb(247, 202, 253);
     margin: 0;
@@ -260,9 +297,9 @@ td.output:first-child {
 
 
 .iframe-container {
-                width: 50%;
-                margin: 20px 0;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 50%;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
