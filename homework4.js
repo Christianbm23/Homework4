@@ -498,7 +498,7 @@ function saveFormData() {
             }
         }
         
-        // Add checkbox values (they might not be included in FormData if unchecked)
+        // Add checkbox values
         const checkboxes = document.querySelectorAll('input[type="checkbox"][name="medical_conditions"]');
         dataToStore.medical_conditions = [];
         checkboxes.forEach(checkbox => {
@@ -525,9 +525,7 @@ function saveFormData() {
     }
 }
 
-// Load form data from localStorage if it exists and hasn't expired
 function loadFormData() {
-    // Check if data exists and hasn't expired
     const expiryTimeStr = localStorage.getItem(STORAGE_EXPIRY_KEY);
     
     if (expiryTimeStr) {
@@ -576,7 +574,6 @@ function loadFormData() {
             // Check the "Remember me" box since we loaded saved data
             document.getElementById("remember-me").checked = true;
             
-            // Show welcome message from the enhanced saved data
             if (storedData.fname) {
                 document.getElementById("welcome-message").textContent = `Welcome back, ${storedData.fname}!`;
                 document.getElementById("returning-user").textContent = `Welcome back, ${storedData.fname}!`;
@@ -594,26 +591,19 @@ function clearStoredFormData() {
     console.log("Stored form data cleared");
 }
 
-// Override the existing clearLocalStorage function
 function clearLocalStorage() {
-    // Clear both the original storage and our enhanced storage
     localStorage.removeItem("patientFirstName");
     clearStoredFormData();
     
-    // Clear welcome messages
     document.getElementById("welcome-message").textContent = "";
     document.getElementById("returning-user").textContent = "";
     
-    // Uncheck the remember me box
     document.getElementById("remember-me").checked = false;
 }
 
-// Event listeners for the remember me functionality
 document.addEventListener("DOMContentLoaded", function() {
-    // Load any saved form data when the page loads
     loadFormData();
     
-    // Attach event listener to the remember me checkbox
     const rememberMeCheckbox = document.getElementById("remember-me");
     if (rememberMeCheckbox) {
         rememberMeCheckbox.addEventListener("change", function() {
@@ -625,7 +615,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Save form data when the form changes (if remember me is checked)
     const formInputs = document.querySelectorAll("#signup input, #signup select, #signup textarea");
     formInputs.forEach(input => {
         input.addEventListener("change", function() {
@@ -635,7 +624,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
     
-    // Save form data before submission (if remember me is checked)
     document.getElementById("signup").addEventListener("submit", function() {
         if (document.getElementById("remember-me").checked) {
             saveFormData();
