@@ -34,14 +34,6 @@ hr {
     position: relative;
 }
 
-
-
-
-
-
-
-
-
 body {
     font-family: Arial, sans-serif;
     background-color: rgb(247, 202, 253);
@@ -247,14 +239,19 @@ td.output:first-child {
 }
 
 
+/* On Scroll Fixed Header */
+#header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(247, 202, 253);
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 5px 0;
+}
 
-
-
-
-
-
-
-
+/* On Scroll Fixed Footer */
 .footer {
     position: fixed;
     bottom: 0;
